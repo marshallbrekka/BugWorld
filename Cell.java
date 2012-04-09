@@ -2,67 +2,100 @@ import java.util.ArrayList;
 
 
 public class Cell {
-	private ArrayList<Actor> actors = new ArrayList<Actor>(3);
+	private Actor[] actors = new Actor[4];
+	protected static final int CRITTER = 0, BUG = 1, FLOWER = 2, ROCK = 3;
+	private int row, col;
+	
+	public Cell(int row, int col) {
+		this.row = row;
+		this.col = col;
+	}
+	
+	public int getRow() {
+		return row;
+	}
+	
+	public int getCol() {
+		return col;
+	}
 	
 	public void add(Actor a) {
-		actors.add(a);
+		int loc = this.getLocation(a.getClass());
+		if(loc < actors.length) {
+			actors[loc] = a;
+		}
 	}
 	
-	public void remove(Actor a) {
-		actors.remove(a);
+	public void kill(Object klass) {
+		int start = klass.equals(Critter.class) ? 0 : klass.equals(Bug.class) ? 1 : 2;
+		
+		// minus 1 from length so that we don't remove rocks
+		for(int i = start; i < actors.length - 1; i++) {
+			if(actors[i] != null) {
+				actors[i].kill();
+				actors[i] = null;
+				break;
+				
+			}
+		}
 	}
 	
-	public int size() {
-		return actors.size();
+	public void remove(Object klass) {
+		int loc = getLocation(klass);
+		if(loc < actors.length) {
+			actors[loc] = null;
+		}
 	}
 	
-	public Actor get(int index) {
-		return actors.get(index);
+	public Actor[] getActors() {
+		int count = 0;
+		for(int i = 0; i < actors.length; i++) {
+			if(actors[i] != null) count++;
+		}
+		Actor[] temp = new Actor[count];
+		for(int i = 0, y = 0; i < actors.length; i++) {
+			if(actors[i] != null) {
+				temp[y] = actors[i];
+				y++;
+			}
+		}
+		return temp;
 	}
 	
-	public ArrayList<Actor> getAllActors() {
-		return actors;
+	private int getLocation(Object klass) {
+		if(klass.equals(Rock.class)) return ROCK;
+		if(klass.equals(Flower.class)) return FLOWER;
+		if(klass.equals(Bug.class)) return BUG;
+		if(klass.equals(Critter.class)) return CRITTER;
+		return actors.length;
+	
 	}
 	
 	public boolean hasRock() {
-		return hasClass(Rock.class);
+		return actors[ROCK] != null;
 	}
 	
 	public boolean hasFlower() {
-		return hasClass(Flower.class);
+		return actors[FLOWER] != null;
 	}
 	
 	public boolean hasBug() {
-		return hasClass(Bug.class);
+		return actors[BUG] != null;
 	}
 	
 	public boolean hasCritter() {
-		return hasClass(Critter.class);
+		return actors[CRITTER] != null;
 	}
 	
-	public Flower getFlower() {
-		return (Flower) getActor(Flower.class);
-	}
-	
-	public Bug getBug() {
-		return (Bug) getActor(Bug.class);
-	}
-	
-	public Critter getCritter() {
-		return (Critter) getActor(Critter.class);
-	}
-	
-	private boolean hasClass(Object theClass) {
-		if(getActor(theClass) != null) return true;
+	public boolean hasClass(Object klass) {
+		int loc = getLocation(klass);
+		if(loc < actors.length) {
+			if(actors[loc] != null) return true;
+		}
 		return false;
 	}
 	
-	private Actor getActor(Object theClass) {
-		for(int i = 0; i < actors.size(); i++) {
-			if(actors.get(i).getClass().equals(theClass)) {
-				return actors.get(i);
-			}
-		}
-		return null;
-	}
+	
+	
+	
 }

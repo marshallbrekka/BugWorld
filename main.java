@@ -12,7 +12,7 @@ import javax.swing.JMenuItem;
 
 
 public class main {
-	private Runner runner;
+	private World world;
 	private JFrame frame;
 	private JMenuBar menuBar = null;
 
@@ -21,7 +21,7 @@ public class main {
 	 */
 	public static void main(String[] args) {
 		main m = new main();
-		m.createWorld(5, 10, 6, 3, 25, 25, 30, 4, 35, 2, 50, 3);
+		m.showMenu();
 
 
 	}
@@ -35,69 +35,21 @@ public class main {
 	}
 	
 	public void stop() {
-		runner.stop();
+		world.paused = true;
 	}
 	
 	public void start() {
-		runner.start();
+		world.paused = false;
+		world.running = true;
 	}
 	
 	public void startNew() {
-		runner.stop();
-		runner = null;
+		world.running = false;
+		world = null;
 		showMenu();
 	}
 	
 	public void showMenu() {
-		menuBar.setVisible(false);
-		frame.getContentPane().removeAll();
-		frame.getContentPane().add(new CreateView(this));
-		frame.pack();
-		frame.setVisible(true);
-		frame.repaint();
-	}
-	
-	public void createWorld(int rocks, int flowers, int bugs, int critters, int rows, int cols, int bugFeed, int newCritter, int critterFeedTime, int deadlyNeighbors, int flowerLife, int newBug) {
-		VisibleWorld w = new VisibleWorld(rows, cols);
-		World world = new World(rows,cols, w);
-		World.BUG_FEEDING_TIME = bugFeed;
-		World.BUGS_FOR_NEW_CRITTER = newCritter;
-		World.CRITTER_FEEDING_TIME = critterFeedTime;
-		World.DEADLY_BUG_NEIGHBORS = deadlyNeighbors;
-		World.FLOWER_LIFE_TIME = flowerLife;
-		World.FLOWERS_FOR_NEW_BUG = newBug;
-		
-		Actor[] actors = new Actor[rocks + flowers + bugs + critters];
-		int i = 0;
-		for(int y = 0; y < rocks; y++) {
-			actors[i] = new Rock(World.ROCK_ICON);
-			i++;
-		}
-		for(int y = 0; y < flowers; y++) {
-			actors[i] = new Flower(World.FLOWER_ICON);
-			i++;
-		}
-		
-		for(int y = 0; y < bugs; y++) {
-			actors[i] = new Bug(World.BUG_ICON);
-			i++;
-		}
-		
-		for(int y = 0; y < critters; y++) {
-			actors[i] = new Critter(World.CRITTER_ICON);
-			i++;
-		}
-		
-		for(int y = 0; y < actors.length; y++) {
-			world.addActor(actors[y]);
-		}
-		world.updateView();
-		
-		
-		
-		frame.getContentPane().removeAll();
-		frame.getContentPane().add(w, BorderLayout.CENTER);
-		
 		if(menuBar == null) {
 			menuBar = new JMenuBar();
 
@@ -135,6 +87,60 @@ public class main {
 			frame.setJMenuBar(menuBar);
 			
 		}
+		menuBar.setVisible(false);
+		frame.getContentPane().removeAll();
+		frame.getContentPane().add(new CreateView(this));
+		frame.pack();
+		frame.setVisible(true);
+		frame.repaint();
+	}
+	
+	public void createWorld(int rocks, int flowers, int bugs, int critters, int rows, int cols, int bugFeed, int newCritter, int critterFeedTime, int deadlyNeighbors, int flowerLife, int newBug) {
+		VisibleWorld w = new VisibleWorld(rows, cols);
+		World world = new World(rows,cols, w);
+		Actor.world = world;
+		World.BUG_FEEDING_TIME = bugFeed;
+		World.BUGS_FOR_NEW_CRITTER = newCritter;
+		World.CRITTER_FEEDING_TIME = critterFeedTime;
+		World.DEADLY_BUG_NEIGHBORS = deadlyNeighbors;
+		World.FLOWER_LIFE_TIME = flowerLife;
+		World.FLOWERS_FOR_NEW_BUG = newBug;
+		World.BUG_SLEEP_TIME = 10000;
+		World.CRITTER_SLEEP_TIME = 80000;
+		World.FLOWER_SLEEP_TIME = 12000;
+		
+		Actor[] actors = new Actor[rocks + flowers + bugs + critters];
+		int i = 0;
+		for(int y = 0; y < rocks; y++) {
+			actors[i] = new Rock(World.ROCK_ICON);
+			i++;
+		}
+		for(int y = 0; y < flowers; y++) {
+			actors[i] = new Flower(World.FLOWER_ICON);
+			i++;
+		}
+		
+		for(int y = 0; y < bugs; y++) {
+			actors[i] = new Bug(World.BUG_ICON);
+			i++;
+		}
+		
+		for(int y = 0; y < critters; y++) {
+			actors[i] = new Critter(World.CRITTER_ICON);
+			i++;
+		}
+		
+		for(int y = 0; y < actors.length; y++) {
+			world.addActor(actors[y]);
+		}
+		world.updateView();
+		
+		
+		
+		frame.getContentPane().removeAll();
+		frame.getContentPane().add(w, BorderLayout.CENTER);
+		
+		
 		
 		
 		menuBar.setVisible(true);
@@ -143,8 +149,8 @@ public class main {
 		frame.pack();
 		frame.setVisible(true);
 		frame.repaint();
-		runner = new Runner(world);
-		runner.start();
+		this.world = world;
+		world.startAll();
 		
 		
 	}

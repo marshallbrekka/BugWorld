@@ -1,23 +1,20 @@
 import javax.swing.ImageIcon;
 
 
-public class Flower extends Actor implements HasLife {
+public class Flower extends Actor implements HasLife, Runnable {
 	private int lifeCount = 0;
 	private int cycle = -1;
 
 
 	public Flower(ImageIcon img) {
-		super(img);
+		super(img, World.FLOWER_SLEEP_TIME);
 		zIndex = 3;
 	}
 
 	@Override
-	public boolean canInhabitSpace(Actor existingActor) {
-		Object theClass = existingActor.getClass();
-		if(theClass.equals(this.getClass()) || theClass.equals(Rock.class)) {
-			return false;
-		}
-		return true;
+	public boolean canInhabitSpace(Cell cell) {
+		boolean can = !(cell.hasClass(Flower.class) || cell.hasClass(Rock.class));
+		return can;
 	}
 
 
@@ -26,7 +23,7 @@ public class Flower extends Actor implements HasLife {
 	public Move move(MoveOptions options) {
 		Move move = null;
 		if(lifeCount == World.FLOWER_LIFE_TIME) {
-			move = new Move(Move.Direction.CENTER, this);
+			move = new Move(Move.Direction.CENTER, this.getClass());
 			
 		}
 		lifeCount++;
@@ -44,5 +41,7 @@ public class Flower extends Actor implements HasLife {
 		
 		cycle = val;
 	}
+
+	
 
 }

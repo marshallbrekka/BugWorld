@@ -13,107 +13,76 @@ public class World {
 	public static int DEADLY_BUG_NEIGHBORS;
 	public static int BUGS_FOR_NEW_CRITTER;
 	public static int CRITTER_FEEDING_TIME;
+	public static int FLOWER_SLEEP_TIME;
+	public static int BUG_SLEEP_TIME;
+	public static int CRITTER_SLEEP_TIME;
 	
 	private int cycle = 0;
 	
 	public static ImageIcon FLOWER_ICON, ROCK_ICON, BUG_ICON, CRITTER_ICON;
+	private ArrayList<HasLife> actors = new ArrayList<HasLife>();
 	
-	private Cell[][] actors;
+	private Cell[][] cells;
 	
 	private VisibleWorld visible;
+	public boolean running = false;
+	public boolean paused = false;
 
 
 	
 	
 	public World(int rows, int cols, VisibleWorld visual) {
+		running = true;
 		visible = visual;
-		actors = new Cell[rows][cols];
-		for(int y = 0; y < actors.length; y++) {
-			for(int x = 0; x < actors[y].length; x++) {
-				actors[y][x] = new Cell();
+		cells = new Cell[rows][cols];
+		for(int row = 0; row < cells.length; row++) {
+			for(int col = 0; col < cells[row].length; col++) {
+				cells[row][col] = new Cell(row, col);
 			}
 		}
 		
 	}
 	
-	public void runRound() {
-		cycle++;
-		Actor a;
-		HasLife hl;
-		for(int row = 0; row < actors.length; row++) {
-			Cell cell;
-			for(int col = 0; col < actors[0].length; col++) {
-				cell = actors[row][col];
-				for(int i = 0; i < cell.size(); i++) {
-					a = cell.get(i);
-					if(a instanceof HasLife) {
-						hl = (HasLife) a;
-						if(hl.getCycle() != cycle) {
-							hl.setCycle(cycle);
-							Move move = hl.move(buildMoveOptions(row, col));
-							if(move != null) {
-								Cell newPlace = getCellFromMove(row, col, move.getMove());
-								Actor toKill = move.getActorToConsume();
-								if(toKill != null) newPlace.remove(toKill);
-								
-								Actor toCreate = move.getActorToCreate();
-								if(toCreate != null) {
-									cell.add(toCreate);
-								}
-								cell.remove((Actor) hl);
-								if(newPlace != cell) {
-									newPlace.add((Actor) hl);
-								}
-								
-								boolean t = false;
-							}
-						}
-						
-						
-						
-						
-					}
-					
-				}
-			}
+	public void startActor(Actor a) {
+		if(a instanceof HasLife) {
+			new Thread(a).start();
 		}
-		
-		updateView();
 	}
+	
+	public void startAll() {
+		for(int i = 0; i < actors.size(); i++) {
+			new Thread((Actor) actors.get(i)).start();
+		}
+	}
+	
 	
 	public void updateView() {
-		for(int row = 0; row < actors.length; row++) {
-			for(int col = 0; col < actors[0].length; col++) {
-				visible.updatePane(row, col, actors[row][col]);
+		for(int row = 0; row < cells.length; row++) {
+			for(int col = 0; col < cells[0].length; col++) {
+				visible.updatePane(cells[row][col]);
 			}
 		}
 	}
 	
-	private Cell getCellFromMove(int row, int col, Move.Direction move) {
-		if(move == Move.Direction.UP) row--;
-		if(move == Move.Direction.DOWN) row++;
-		if(move == Move.Direction.LEFT) col--;
-		if(move == Move.Direction.RIGHT) col++;
-		return getCell(row, col);
-	}
 	
 	private Cell getCell(int row, int col) {
 		if(row < 0) {
-			row = actors.length + row;
-		} else if(row >= actors.length) {
-			row = row - actors.length;
+			row = cells.length + row;
+		} else if(row >= cells.length) {
+			row = row - cells.length;
 		}
 		
 		if(col < 0) {
-			col = actors[0].length + col;
-		} else if(col >= actors[0].length) {
-			col = col - actors[0].length;
+			col = cells[0].length + col;
+		} else if(col >= cells[0].length) {
+			col = col - cells[0].length;
 		}
 		
-		return actors[row][col];
+		return cells[row][col];
 	}
 	
-	private MoveOptions buildMoveOptions(int row, int col) {
+	public MoveOptions getMoveOptions(Cell cell) {
+		int row = cell.getRow(), col = cell.getCol();
 		Cell up, down, left, right, center;
 		up = getCell(row - 1, col);
 		down = getCell(row + 1, col);
@@ -130,10 +99,10 @@ public class World {
 	 * @return
 	 */
 	public boolean addActor(Actor a) {
-		ArrayList<Integer> emptyRows = new ArrayList<Integer>(actors.length);
+		ArrayList<Integer> emptyRows = new ArrayList<Integer>(cells.length);
 		ArrayList<ArrayList<Integer>> emptyCells = new ArrayList<ArrayList<Integer>>();
 		ArrayList<Integer> temp;
-		for(int i = 0; i < actors.length; i++) {
+		for(int i = 0; i < cells.length; i++) {
 			temp = getEmptyCells(i, a);
 			if(temp != null) {
 				emptyRows.add(i);
@@ -150,8 +119,12 @@ public class World {
 		max = emptyCells.get(row).size();
 		int col = rand.nextInt(max);
 		
-		actors[row][col].add(a);
-		//allActors.add(a);
+		cells[row][col].add(a);
+		a.setCell(cells[row][col]);
+		if(a instanceof HasLife) {
+			actors.add((HasLife) a);
+		}
+		
 		return true;
 		
 	}
@@ -159,7 +132,7 @@ public class World {
 	
 	// i don't think i ever use this
 	public boolean addActor(Actor a, int row, int col) {
-		Cell existing = actors[row][col];
+		Cell existing = cells[row][col];
 		if(isCellEmpty(a, existing)) {
 			existing.add(a);
 			//allActors.add(a);
@@ -168,13 +141,17 @@ public class World {
 		return false;
 	}
 	
+	public void redrawCell(Cell cell) {
+		visible.updatePane(cell);
+	}
+	
 	private ArrayList<Integer> getEmptyCells(int row, Actor a) {
-		ArrayList<Integer> spaces = new ArrayList<Integer>(actors[0].length);
+		ArrayList<Integer> spaces = new ArrayList<Integer>(cells[0].length);
 		Cell temp;
 		boolean empty;
 		
-		for(int i = 0; i < actors[row].length; i++) {
-			temp = actors[row][i];
+		for(int i = 0; i < cells[row].length; i++) {
+			temp = cells[row][i];
 			empty = isCellEmpty(a, temp);
 			
 			if (empty) {
@@ -189,15 +166,9 @@ public class World {
 		}
 	}
 	
+	
+	
 	private boolean isCellEmpty(Actor a, Cell cell) {
-		boolean empty = true;
-		for(int y = 0; y < cell.size(); y++) {
-			Actor tempActor = cell.get(y);
-			if(!a.canInhabitSpace(tempActor)) {
-				empty = false;
-				break;
-			}
-		}
-		return empty;
+		return a.canInhabitSpace(cell);
 	}
 }

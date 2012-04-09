@@ -14,39 +14,41 @@ public class Bug extends Actor implements HasLife {
 	private LinkedList<Integer> seedDropTimes = new LinkedList<Integer>();
 
 	public Bug(ImageIcon img) {
-		super(img);
+		super(img, World.BUG_SLEEP_TIME);
 		zIndex = 2;
 	}
 
 	@Override
-	public boolean canInhabitSpace(Actor existingActor) {
-		return !existingActor.getClass().equals(Bug.class);
+	public boolean canInhabitSpace(Cell cell) {
+		return !cell.hasClass(Bug.class);
 	}
 
 	@Override
 	public Move move(MoveOptions options) {
 		Move move = null;
 		if(lifeCount == World.BUG_FEEDING_TIME) {
-			move = new Move(Move.Direction.CENTER, this);
+			move = new Move(Move.Direction.CENTER, this.getClass());
 		} else {
 			lifeCount++;
 			Move.Direction dir = chooseDirection(options);
 			Cell newPlace = options.getOption(dir);
-			Flower flower = null;
+			Class<?> flower = null;
 			Actor newActor = null;
 			
 			if(seedCount >= World.FLOWERS_FOR_NEW_BUG && dir != Move.Direction.CENTER) {
 				newActor = new Bug(World.BUG_ICON);
+				newActor.setCell(cell);
 				seedCount = seedCount - World.FLOWERS_FOR_NEW_BUG;
 			}
 			
 			if(newPlace.hasFlower()) {
 				addSeed();
-				flower = newPlace.getFlower();
+				flower = Flower.class;
 			}
 			if(!options.getOption(Move.Direction.CENTER).hasRock() && seedDropTimes.size() != 0 && seedDropTimes.peek() <= lifeCount && newActor == null) {
 				seedDropTimes.poll();
 				newActor = new Flower(World.FLOWER_ICON);
+				newActor.setCell(cell);
 			}
 			move = new Move(dir, flower, newActor);
 		}

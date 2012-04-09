@@ -23,7 +23,7 @@ public class Runner implements Runnable {
    public void run() {
      Thread thisThread = Thread.currentThread();
      while (runner == thisThread) {
-       world.runRound();
+       //world.runRound();
        try {
          Thread.sleep(pause);
        } catch (InterruptedException e) { }

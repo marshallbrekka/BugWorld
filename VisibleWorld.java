@@ -10,13 +10,13 @@ public class VisibleWorld extends JPanel {
 	private JLayeredPane[][] panes;
 	
 	
-	public VisibleWorld(int row, int col) {
-		panes = new JLayeredPane[row][col];
-		GridLayout layout = new GridLayout(row, col);
+	public VisibleWorld(int rows, int cols) {
+		panes = new JLayeredPane[rows][cols];
+		GridLayout layout = new GridLayout(rows, cols);
 		
 		setLayout(layout);
-		for(int x = 0; x < row; x++) {
-			for(int y = 0; y < col; y++) {
+		for(int x = 0; x < rows; x++) {
+			for(int y = 0; y < cols; y++) {
 				JLayeredPane pane = createPane(null);
 				this.add(pane);
 				panes[x][y] = pane;
@@ -25,8 +25,8 @@ public class VisibleWorld extends JPanel {
 		
 	}
 	
-	public void updatePane(int row, int col, Cell cell) {
-		updatePane(panes[row][col], cell);
+	public void updatePane(Cell cell) {
+		updatePane(panes[cell.getRow()][cell.getCol()], cell);
 	}
 	
 
@@ -44,9 +44,10 @@ public class VisibleWorld extends JPanel {
 	private void updatePane(JLayeredPane pane, Cell cell) {
 		pane.removeAll();
 		JLabel label;
-		for(int i = 0; i < cell.size(); i++) {
-			label = cell.get(i).getImage();
-			pane.add(label, cell.get(i).getZIndex());
+		Actor[] temp = cell.getActors();
+		for(int i = 0; i < temp.length; i++) {
+			label = temp[i].getImage();
+			pane.add(label, temp[i].getZIndex());
 		}
 		pane.repaint();
 		this.repaint();

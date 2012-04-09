@@ -10,13 +10,13 @@ public class Critter extends Actor implements HasLife {
 	private int foodCount = 0;
 
 	public Critter(ImageIcon img) {
-		super(img);
+		super(img, World.CRITTER_SLEEP_TIME);
 		zIndex = 0;
 	}
 
 	@Override
-	public boolean canInhabitSpace(Actor existingActor) {
-		return !existingActor.getClass().equals(Critter.class);
+	public boolean canInhabitSpace(Cell cell) {
+		return !cell.hasClass(Critter.class);
 	}
 
 	@Override
@@ -24,30 +24,31 @@ public class Critter extends Actor implements HasLife {
 		Move move = null;
 		
 		if(lifeCount == World.BUG_FEEDING_TIME) {
-			move = new Move(Move.Direction.CENTER, this);
+			move = new Move(Move.Direction.CENTER, this.getClass());
 		} else if(options.getOption(Move.Direction.CENTER).hasBug()) {
-			move = new Move(Move.Direction.CENTER, options.getOption(Move.Direction.CENTER).getBug());
+			move = new Move(Move.Direction.CENTER, Bug.class);
 			foodCount++;
 			lifeCount = 0;
 		} else {
 			lifeCount++;
 			Move.Direction dir = chooseDirection(options);
 			Cell newPlace = options.getOption(dir);
-			Actor killed = null;
+			Class<?> killed = null;
 			Actor newActor = null;
 			
 			if(foodCount >= World.BUGS_FOR_NEW_CRITTER && dir != Move.Direction.CENTER) {
 				newActor = new Critter(World.CRITTER_ICON);
+				newActor.setCell(cell);
 				foodCount = foodCount - World.BUGS_FOR_NEW_CRITTER;
 			}
 			
 			if(!newPlace.hasRock() && newPlace.hasBug()) {
 				lifeCount = 0;
 				foodCount++;
-				killed = newPlace.getBug();
+				killed = Bug.class;
 			} 
 			if(newPlace.hasFlower()) {
-				killed = newPlace.getFlower();
+				killed = Flower.class;
 			}
 			
 			move = new Move(dir, killed, newActor);

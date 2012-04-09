@@ -6,17 +6,18 @@ public class Rock extends Actor {
 	
 	
 	public Rock(ImageIcon img) {
-		super(img);
+		super(img,  0);
 		zIndex = 1;
 	}
 
 	@Override
-	public boolean canInhabitSpace(Actor existingActor) {
-		Object theClass = existingActor.getClass();
-		if(theClass.equals(this.getClass()) || theClass.equals(Flower.class)) {
-			return false;
-		}
-		return true;
+	public boolean canInhabitSpace(Cell cell) {
+		return !(cell.hasClass(Rock.class) || cell.hasClass(Flower.class));
+	}
+
+	@Override
+	public Move move(MoveOptions options) {
+		return null;
 	}
 
 }
