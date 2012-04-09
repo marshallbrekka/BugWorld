@@ -106,16 +106,6 @@ public class Critter extends Actor implements HasLife {
 		
 	}
 	
-	@Override
-	public int getCycle() {
-		return cycle;
-	}
-
-
-	@Override
-	public void setCycle(int val) {
-		
-		cycle = val;
-	}
+	
 
 }

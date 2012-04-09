@@ -30,17 +30,7 @@ public class Flower extends Actor implements HasLife, Runnable {
 		return move;
 	}
 
-	@Override
-	public int getCycle() {
-		return cycle;
-	}
-
-
-	@Override
-	public void setCycle(int val) {
-		
-		cycle = val;
-	}
+	
 
 	
 

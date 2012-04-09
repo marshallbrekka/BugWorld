@@ -72,21 +72,30 @@ public abstract class Actor implements Runnable {
 							continue;
 						}
 						moved = true;
+						
+						// kill to actor on the cell you are moving to
+						// this can be "this", as in a flower has reached the end of its life
 						Class<?> toKill = move.getClassToConsume();
+						if(toKill != null) newCell.kill(toKill);
 						
-						if(toKill != null) newCell.remove(toKill);
+
 						
-						Actor toCreate = move.getActorToCreate();
-						center.remove(this.getClass());
 						if(newCell != center) {
+							center.remove(this.getClass());
 							newCell.add(this);
 						}
-						cell = newCell;
+						
+						
+						Actor toCreate = move.getActorToCreate();
+						
 						
 						if(toCreate != null) {
 							center.add(toCreate);
+							toCreate.setCell(cell);
 							world.startActor(toCreate);
 						}
+						
+						cell = newCell;
 						world.redrawCell(newCell);
 						world.redrawCell(center);
 						
