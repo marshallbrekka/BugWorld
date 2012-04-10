@@ -43,7 +43,7 @@ public abstract class Actor implements Runnable {
 
 			Move move = move(options);
 			
-			
+			if(move == null) return;
 			Cell lock1, lock2;
 			
 			Move.Direction direction = move.getMove();
@@ -54,11 +54,12 @@ public abstract class Actor implements Runnable {
 			case DOWN:
 				lock1 = center;
 				lock2 = newCell;
-				newCell = center;
+				
 				break;
 			case CENTER:
 				lock1 = center;
 				lock2 = center;
+				newCell = center;
 			default:
 				lock1 = newCell;
 				lock2 = center;
@@ -84,18 +85,23 @@ public abstract class Actor implements Runnable {
 							center.remove(this.getClass());
 							newCell.add(this);
 						}
-						
+						cell = newCell;
+						if(this instanceof HasLife) {
+							Class<?> kill = ((HasLife)this).getClassToKill(cell);
+							if(kill != null) {
+								cell.kill(kill);
+							}
+						}
 						
 						Actor toCreate = move.getActorToCreate();
 						
 						
 						if(toCreate != null) {
 							center.add(toCreate);
-							toCreate.setCell(cell);
 							world.startActor(toCreate);
 						}
 						
-						cell = newCell;
+						
 						world.redrawCell(newCell);
 						world.redrawCell(center);
 						
@@ -121,9 +127,10 @@ public abstract class Actor implements Runnable {
 				if(!world.paused) {
 					makeMove();
 				}
-				System.out.println("start " + this.hashCode());
-				Thread.currentThread().sleep(sleepTime);
-				System.out.println("end " + this.hashCode());
+				System.out.println("start " + this.hashCode() + this.getClass());
+				Thread.sleep(sleepTime);
+				
+				System.out.println("end " + this.hashCode() + this.getClass());
 	        } catch (InterruptedException e){}
 		}
 		System.out.println(this.getClass().toString() + " died");

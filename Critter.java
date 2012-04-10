@@ -23,15 +23,18 @@ public class Critter extends Actor implements HasLife {
 	public Move move(MoveOptions options) {
 		Move move = null;
 		
-		if(lifeCount == World.BUG_FEEDING_TIME) {
+		if(lifeCount == World.CRITTER_FEEDING_TIME) {
 			move = new Move(Move.Direction.CENTER, this.getClass());
-		} else if(options.getOption(Move.Direction.CENTER).hasBug()) {
+		} else if(options.getOption(Move.Direction.CENTER).hasBug() && !options.getOption(Move.Direction.CENTER).hasRock()) {
 			move = new Move(Move.Direction.CENTER, Bug.class);
 			foodCount++;
 			lifeCount = 0;
 		} else {
 			lifeCount++;
 			Move.Direction dir = chooseDirection(options);
+			
+			// happens when critter is killed by bugs
+			if(dir == null) return move = new Move(Move.Direction.CENTER, this.getClass());
 			Cell newPlace = options.getOption(dir);
 			Class<?> killed = null;
 			Actor newActor = null;
@@ -40,15 +43,6 @@ public class Critter extends Actor implements HasLife {
 				newActor = new Critter(World.CRITTER_ICON);
 				newActor.setCell(cell);
 				foodCount = foodCount - World.BUGS_FOR_NEW_CRITTER;
-			}
-			
-			if(!newPlace.hasRock() && newPlace.hasBug()) {
-				lifeCount = 0;
-				foodCount++;
-				killed = Bug.class;
-			} 
-			if(newPlace.hasFlower()) {
-				killed = Flower.class;
 			}
 			
 			move = new Move(dir, killed, newActor);
@@ -106,6 +100,16 @@ public class Critter extends Actor implements HasLife {
 		
 	}
 	
-	
+	public Class<?> getClassToKill(Cell cell) {
+		if(!cell.hasRock() && cell.hasBug()) {
+			lifeCount = 0;
+			foodCount++;
+			return Bug.class;
+		} 
+		if(cell.hasFlower()) {
+			return Flower.class;
+		}
+		return null;
+	}
 
 }

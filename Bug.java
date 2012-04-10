@@ -41,10 +41,7 @@ public class Bug extends Actor implements HasLife {
 				seedCount = seedCount - World.FLOWERS_FOR_NEW_BUG;
 			}
 			
-			if(newPlace.hasFlower()) {
-				addSeed();
-				flower = Flower.class;
-			}
+			
 			if(!options.getOption(Move.Direction.CENTER).hasRock() && seedDropTimes.size() != 0 && seedDropTimes.peek() <= lifeCount && newActor == null) {
 				seedDropTimes.poll();
 				newActor = new Flower(World.FLOWER_ICON);
@@ -119,6 +116,14 @@ public class Bug extends Actor implements HasLife {
 		return Move.Direction.CENTER;
 		
 		
+	}
+	
+	public Class<?> getClassToKill(Cell cell) {
+		if(cell.hasFlower()) {
+			addSeed();
+			return Flower.class;
+		}
+		return null;
 	}
 	
 

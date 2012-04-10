@@ -28,6 +28,7 @@ public class main {
 	
 	public main() {
 		frame = new JFrame("World");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		World.BUG_ICON = loadImage("/img/bug_s.png");
 		World.FLOWER_ICON = loadImage("/img/flower_s.png");
 		World.CRITTER_ICON = loadImage("/img/critter_s.png");
@@ -105,9 +106,9 @@ public class main {
 		World.DEADLY_BUG_NEIGHBORS = deadlyNeighbors;
 		World.FLOWER_LIFE_TIME = flowerLife;
 		World.FLOWERS_FOR_NEW_BUG = newBug;
-		World.BUG_SLEEP_TIME = 10000;
-		World.CRITTER_SLEEP_TIME = 80000;
-		World.FLOWER_SLEEP_TIME = 12000;
+		World.BUG_SLEEP_TIME = 800;
+		World.CRITTER_SLEEP_TIME = 600;
+		World.FLOWER_SLEEP_TIME = 1000;
 		
 		Actor[] actors = new Actor[rocks + flowers + bugs + critters];
 		int i = 0;

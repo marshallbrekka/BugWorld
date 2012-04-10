@@ -113,11 +113,12 @@ public class World {
 		if(emptyRows.size() == 0) return false;
 		Random rand = new Random();
 		int max = emptyRows.size();
-		int row = rand.nextInt(max);
+		int rowIndex = rand.nextInt(max);
+		int row = emptyRows.get(rowIndex);
 		
 		rand = new Random();
-		max = emptyCells.get(row).size();
-		int col = rand.nextInt(max);
+		max = emptyCells.get(rowIndex).size();
+		int col = emptyCells.get(rowIndex).get(rand.nextInt(max));
 		
 		cells[row][col].add(a);
 		a.setCell(cells[row][col]);
@@ -165,10 +166,10 @@ public class World {
 			return spaces;
 		}
 	}
-	
-	
+
 	
 	private boolean isCellEmpty(Actor a, Cell cell) {
-		return a.canInhabitSpace(cell);
+		boolean val = a.canInhabitSpace(cell);
+		return val;
 	}
 }

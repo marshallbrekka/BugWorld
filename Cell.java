@@ -21,6 +21,10 @@ public class Cell {
 	
 	public void add(Actor a) {
 		int loc = this.getLocation(a.getClass());
+		
+		if(loc == FLOWER) {
+			int x = 0;
+		}
 		if(loc < actors.length) {
 			actors[loc] = a;
 		}
@@ -29,9 +33,12 @@ public class Cell {
 	public void kill(Object klass) {
 		int start = klass.equals(Critter.class) ? 0 : klass.equals(Bug.class) ? 1 : 2;
 		
+		
+		
 		// minus 1 from length so that we don't remove rocks
 		for(int i = start; i < actors.length - 1; i++) {
 			if(actors[i] != null) {
+				
 				actors[i].kill();
 				actors[i] = null;
 				break;
@@ -42,6 +49,9 @@ public class Cell {
 	
 	public void remove(Object klass) {
 		int loc = getLocation(klass);
+		if(loc == FLOWER) {
+			int x = 0;
+		}
 		if(loc < actors.length) {
 			actors[loc] = null;
 		}

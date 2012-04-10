@@ -29,6 +29,10 @@ public class Flower extends Actor implements HasLife, Runnable {
 		lifeCount++;
 		return move;
 	}
+	
+	public Class<?> getClassToKill(Cell cell) {
+		return null;
+	}
 
 	
 
