@@ -105,7 +105,6 @@ public abstract class Actor implements Runnable {
 						world.redrawCell(newCell);
 						world.redrawCell(center);
 						
-						System.out.println(this.getClass().toString() + " moved " + move.getMove().toString() + " " + sleepTime);
 						
 					} else {
 						moved = true;
@@ -127,13 +126,13 @@ public abstract class Actor implements Runnable {
 				if(!world.paused) {
 					makeMove();
 				}
-				System.out.println("start " + this.hashCode() + this.getClass());
+				
 				Thread.sleep(sleepTime);
 				
-				System.out.println("end " + this.hashCode() + this.getClass());
+				
 	        } catch (InterruptedException e){}
 		}
-		System.out.println(this.getClass().toString() + " died");
+		
 	}
 
 	
