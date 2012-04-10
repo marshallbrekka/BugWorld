@@ -6,7 +6,7 @@ import javax.swing.ImageIcon;
 
 
 public class Bug extends Actor implements HasLife {
-	private int cycle = -1;
+
 	
 	private static final int MAX_SEED_DROP_TIME = 4;
 	private int lifeCount = 0;
@@ -31,7 +31,6 @@ public class Bug extends Actor implements HasLife {
 		} else {
 			lifeCount++;
 			Move.Direction dir = chooseDirection(options);
-			Cell newPlace = options.getOption(dir);
 			Class<?> flower = null;
 			Actor newActor = null;
 			

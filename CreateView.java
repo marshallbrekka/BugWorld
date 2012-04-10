@@ -16,9 +16,9 @@ public class CreateView extends JPanel {
 			"Bug Feeding Time", "Flowers for new Bug", "Deadly Bug Neighbors",
 			"Bugs for new Critters","Critter Feeding Time"};
 	
-	private main m;
+	private Main m;
 	
-	public CreateView(main m) {
+	public CreateView(Main m) {
 		super();
 		this.m = m;
 

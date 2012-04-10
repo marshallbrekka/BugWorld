@@ -5,7 +5,7 @@ import javax.swing.ImageIcon;
 
 
 public class Critter extends Actor implements HasLife {
-	private int cycle = -1;
+
 	private int lifeCount = 0;
 	private int foodCount = 0;
 
@@ -35,7 +35,7 @@ public class Critter extends Actor implements HasLife {
 			
 			// happens when critter is killed by bugs
 			if(dir == null) return move = new Move(Move.Direction.CENTER, this.getClass());
-			Cell newPlace = options.getOption(dir);
+			
 			Class<?> killed = null;
 			Actor newActor = null;
 			

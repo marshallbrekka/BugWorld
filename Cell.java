@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 
 public class Cell {
 	private Actor[] actors = new Actor[4];
@@ -22,9 +20,7 @@ public class Cell {
 	public void add(Actor a) {
 		int loc = this.getLocation(a.getClass());
 		
-		if(loc == FLOWER) {
-			int x = 0;
-		}
+		
 		if(loc < actors.length) {
 			actors[loc] = a;
 		}
@@ -49,9 +45,7 @@ public class Cell {
 	
 	public void remove(Object klass) {
 		int loc = getLocation(klass);
-		if(loc == FLOWER) {
-			int x = 0;
-		}
+	
 		if(loc < actors.length) {
 			actors[loc] = null;
 		}

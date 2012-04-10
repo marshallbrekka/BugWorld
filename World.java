@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
@@ -17,7 +16,7 @@ public class World {
 	public static int BUG_SLEEP_TIME;
 	public static int CRITTER_SLEEP_TIME;
 	
-	private int cycle = 0;
+
 	
 	public static ImageIcon FLOWER_ICON, ROCK_ICON, BUG_ICON, CRITTER_ICON;
 	private ArrayList<HasLife> actors = new ArrayList<HasLife>();
@@ -131,16 +130,7 @@ public class World {
 	}
 	
 	
-	// i don't think i ever use this
-	public boolean addActor(Actor a, int row, int col) {
-		Cell existing = cells[row][col];
-		if(isCellEmpty(a, existing)) {
-			existing.add(a);
-			//allActors.add(a);
-			return true;
-		}
-		return false;
-	}
+	
 	
 	public void redrawCell(Cell cell) {
 		visible.updatePane(cell);

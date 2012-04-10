@@ -3,7 +3,7 @@ import javax.swing.ImageIcon;
 
 public class Flower extends Actor implements HasLife, Runnable {
 	private int lifeCount = 0;
-	private int cycle = -1;
+
 
 
 	public Flower(ImageIcon img) {
